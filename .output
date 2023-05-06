@@ -1,0 +1,133 @@
+server.c:19:35: error: ‘struct client_info’ declared inside parameter list will not be visible outside of this definition or declaration [-Werror]
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+                                   ^~~~~~~~~~~
+server.c: In function ‘main’:
+server.c:64:13: error: passing argument 1 of ‘cleanup’ makes integer from pointer without a cast [-Werror=int-conversion]
+     cleanup(NULL, fragment_files, num_fragments);
+             ^~~~
+server.c:19:18: note: expected ‘int’ but argument is of type ‘void *’
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+              ~~~~^~~~~~~~
+server.c:64:19: error: passing argument 2 of ‘cleanup’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+     cleanup(NULL, fragment_files, num_fragments);
+                   ^~~~~~~~~~~~~~
+server.c:19:48: note: expected ‘struct client_info *’ but argument is of type ‘FILE **’ {aka ‘struct _IO_FILE **’}
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+                            ~~~~~~~~~~~~~~~~~~~~^~~~~~~
+server.c:64:35: error: passing argument 3 of ‘cleanup’ makes pointer from integer without a cast [-Werror=int-conversion]
+     cleanup(NULL, fragment_files, num_fragments);
+                                   ^~~~~~~~~~~~~
+server.c:19:64: note: expected ‘FILE **’ {aka ‘struct _IO_FILE **’} but argument is of type ‘int’
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+                                                         ~~~~~~~^~~~~~~~~~~~~~
+server.c:64:5: error: too few arguments to function ‘cleanup’
+     cleanup(NULL, fragment_files, num_fragments);
+     ^~~~~~~
+server.c:19:6: note: declared here
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+      ^~~~~~~
+server.c: In function ‘event_handling’:
+server.c:179:37: error: implicit declaration of function ‘accept_client’ [-Werror=implicit-function-declaration]
+                 int client_socket = accept_client(server_socket);
+                                     ^~~~~~~~~~~~~
+server.c:181:21: error: implicit declaration of function ‘add_client_to_epoll’ [-Werror=implicit-function-declaration]
+                     add_client_to_epoll(epoll_fd, client_socket);
+                     ^~~~~~~~~~~~~~~~~~~
+server.c:182:31: error: implicit declaration of function ‘add_client_to_list’ [-Werror=implicit-function-declaration]
+                     clients = add_client_to_list(clients, client_socket, fragment_files[connected_clients]);
+                               ^~~~~~~~~~~~~~~~~~
+server.c:182:89: error: ‘connected_clients’ undeclared (first use in this function); did you mean ‘completed_clients’?
+                     clients = add_client_to_list(clients, client_socket, fragment_files[connected_clients]);
+                                                                                         ^~~~~~~~~~~~~~~~~
+                                                                                         completed_clients
+server.c:182:89: note: each undeclared identifier is reported only once for each function it appears in
+server.c:187:46: error: implicit declaration of function ‘find_client’ [-Werror=implicit-function-declaration]
+                 struct client_info *client = find_client(clients, events[i].data.fd);
+                                              ^~~~~~~~~~~
+server.c:187:46: error: initialization of ‘struct client_info *’ from ‘int’ makes pointer from integer without a cast [-Werror=int-conversion]
+server.c:191:29: error: implicit declaration of function ‘handle_client_read’ [-Werror=implicit-function-declaration]
+                         if (handle_client_read(client)) {
+                             ^~~~~~~~~~~~~~~~~~
+server.c:200:25: error: implicit declaration of function ‘handle_client_write’ [-Werror=implicit-function-declaration]
+                         handle_client_write(client);
+                         ^~~~~~~~~~~~~~~~~~~
+server.c:207:5: error: too many arguments to function ‘write_output’
+     write_output(output_filename, clients);
+     ^~~~~~~~~~~~
+server.c:18:6: note: declared here
+ void write_output(const char *output_filename);
+      ^~~~~~~~~~~~
+server.c:208:23: error: passing argument 2 of ‘cleanup’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+     cleanup(epoll_fd, clients);
+                       ^~~~~~~
+server.c:19:48: note: expected ‘struct client_info *’ but argument is of type ‘struct client_info *’
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+                            ~~~~~~~~~~~~~~~~~~~~^~~~~~~
+server.c:208:5: error: too few arguments to function ‘cleanup’
+     cleanup(epoll_fd, clients);
+     ^~~~~~~
+server.c:19:6: note: declared here
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+      ^~~~~~~
+server.c: At top level:
+server.c:224:6: error: conflicting types for ‘add_client_to_epoll’ [-Werror]
+ void add_client_to_epoll(int epoll_fd, int client_socket) {
+      ^~~~~~~~~~~~~~~~~~~
+server.c:181:21: note: previous implicit declaration of ‘add_client_to_epoll’ was here
+                     add_client_to_epoll(epoll_fd, client_socket);
+                     ^~~~~~~~~~~~~~~~~~~
+server.c:234:21: error: conflicting types for ‘add_client_to_list’
+ struct client_info *add_client_to_list(struct client_info *clients, int client_socket, FILE *fragment_file) {
+                     ^~~~~~~~~~~~~~~~~~
+server.c:182:31: note: previous implicit declaration of ‘add_client_to_list’ was here
+                     clients = add_client_to_list(clients, client_socket, fragment_files[connected_clients]);
+                               ^~~~~~~~~~~~~~~~~~
+server.c:242:21: error: conflicting types for ‘find_client’
+ struct client_info *find_client(struct client_info *clients, int client_socket) {
+                     ^~~~~~~~~~~
+server.c:187:46: note: previous implicit declaration of ‘find_client’ was here
+                 struct client_info *client = find_client(clients, events[i].data.fd);
+                                              ^~~~~~~~~~~
+server.c: In function ‘handle_client_read’:
+server.c:254:17: error: ‘READ_BUFFER_SIZE’ undeclared (first use in this function); did you mean ‘GROUP_FILTER_SIZE’?
+     char buffer[READ_BUFFER_SIZE];
+                 ^~~~~~~~~~~~~~~~
+                 GROUP_FILTER_SIZE
+server.c:268:5: error: implicit declaration of function ‘process_client_data’ [-Werror=implicit-function-declaration]
+     process_client_data(client, buffer);
+     ^~~~~~~~~~~~~~~~~~~
+server.c:254:10: error: unused variable ‘buffer’ [-Werror=unused-variable]
+     char buffer[READ_BUFFER_SIZE];
+          ^~~~~~
+server.c: At top level:
+server.c:273:6: error: conflicting types for ‘handle_client_write’ [-Werror]
+ void handle_client_write(struct client_info *client) {
+      ^~~~~~~~~~~~~~~~~~~
+server.c:200:25: note: previous implicit declaration of ‘handle_client_write’ was here
+                         handle_client_write(client);
+                         ^~~~~~~~~~~~~~~~~~~
+server.c: In function ‘handle_client_write’:
+server.c:274:17: error: ‘WRITE_BUFFER_SIZE’ undeclared (first use in this function); did you mean ‘GROUP_FILTER_SIZE’?
+     char buffer[WRITE_BUFFER_SIZE];
+                 ^~~~~~~~~~~~~~~~~
+                 GROUP_FILTER_SIZE
+server.c:275:22: error: implicit declaration of function ‘read_fragment_data’ [-Werror=implicit-function-declaration]
+     int bytes_read = read_fragment_data(client->fragment_file, buffer, WRITE_BUFFER_SIZE - 1);
+                      ^~~~~~~~~~~~~~~~~~
+server.c:274:10: error: unused variable ‘buffer’ [-Werror=unused-variable]
+     char buffer[WRITE_BUFFER_SIZE];
+          ^~~~~~
+server.c: At top level:
+server.c:305:6: error: conflicting types for ‘process_client_data’ [-Werror]
+ void process_client_data(struct client_info *client, const char *data) {
+      ^~~~~~~~~~~~~~~~~~~
+server.c:268:5: note: previous implicit declaration of ‘process_client_data’ was here
+     process_client_data(client, buffer);
+     ^~~~~~~~~~~~~~~~~~~
+server.c:340:6: error: conflicting types for ‘cleanup’
+ void cleanup(FILE *output_file, FILE **fragment_files, int num_fragments) {
+      ^~~~~~~
+server.c:19:6: note: previous declaration of ‘cleanup’ was here
+ void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments);
+      ^~~~~~~
+cc1: all warnings being treated as errors
