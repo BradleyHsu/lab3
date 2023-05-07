@@ -56,6 +56,10 @@ int main(int argc, char *argv[]) {
     printf("Input filename: %s\n", input_filename);
     printf("Port: %d\n", port);
 
+    #ifdef DEBUG
+        printf("Debug mode enabled\n");
+    #endif
+
     char *output_filename;
     FILE **fragment_files;
     int num_fragments;
