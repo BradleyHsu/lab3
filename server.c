@@ -323,7 +323,6 @@ int handle_client_read(struct client_info *client) {
 
 
 void handle_client_write(struct client_info *client) {
-    printf("Handling client write\n");
     char buffer[WRITE_BUFFER_SIZE];
     int bytes_read = read_fragment_data(client->fragment_file, buffer, WRITE_BUFFER_SIZE - 1);
     if (bytes_read <= 0) {
