@@ -118,6 +118,8 @@ int open_files(char *input_filename, char **output_filename, FILE ***fragment_fi
 
     *output_filename = strdup(buffer);
 
+    strtok(*output_filename, "\n");
+
     // Read fragment file names and open them
     int fragment_count = 0;
     *fragment_files = NULL;
