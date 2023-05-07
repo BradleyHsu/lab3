@@ -390,7 +390,6 @@ void process_client_data(struct client_info *client, const char *data) {
         printf("Inserting line %d: %s\n", line_number, token);
         insert_line_node(line_number, token);
         token = strtok(NULL, " ");
-        }
     }
     
     free(data_copy);
