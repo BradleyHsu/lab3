@@ -43,7 +43,6 @@ void free_line_nodes();
 #define READ_BUFFER_SIZE 4096
 #define WRITE_BUFFER_SIZE 4096
 
-#define DEBUG 1
 
 static line_node *head = NULL;
 
