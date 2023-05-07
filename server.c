@@ -119,6 +119,14 @@ int open_files(char *input_filename, char **output_filename, FILE ***fragment_fi
 
     *output_filename = strdup(buffer);
 
+    FILE *output_file = fopen(*output_filename, "w");
+    if (!output_file) {
+        perror("Error opening output file");
+        fclose(input_file);
+        exit(EXIT_FAILURE);
+    }
+    fclose(output_file);
+
     strtok(*output_filename, "\n");
 
     // Read fragment file names and open them
