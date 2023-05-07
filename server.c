@@ -198,6 +198,9 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
         }
 
         for (int event_idx = 0; event_idx < ready; event_idx++) {
+            printf("Event: %d\n", event_idx);
+            printf("Event fd: %d\n", events[event_idx].data.fd);
+            printf("Event mask: %d\n", events[event_idx].events);
             if (events[event_idx].data.fd == server_socket) {
                 // Handle new client connection
                 int client_socket = accept_client(server_socket);
