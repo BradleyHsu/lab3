@@ -174,6 +174,7 @@ void send_sorted_data_to_server(int socket_fd, line_node *head) {
     while (current) {
         int bytes_written = snprintf(buffer, 1024, "%d %s\n", current->line_number, current->line);
         printf("Sending %d bytes\n", bytes_written);
+        printf("Sending: %s\n", buffer);
         if (write(socket_fd, buffer, bytes_written) != bytes_written) {
             perror("Error writing to server");
             exit(6);
