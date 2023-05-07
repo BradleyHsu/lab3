@@ -320,7 +320,7 @@ int handle_client_read(struct client_info *client) {
     } while (bytes_read > 0 && total_bytes_read < READ_BUFFER_SIZE - 1);
 
     if (bytes_read != 0) {
-        print("read buffer %s\n", buffer);
+        printf("read buffer %s\n", buffer);
     } 
     buffer[total_bytes_read] = '\0';
     process_client_data(client, buffer);
