@@ -6,13 +6,18 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "line_node.h" // This should be the header file you provided earlier
 
 typedef struct client_info {
     int socket;                     
     FILE *fragment_file;            
     struct client_info *next;       
 } client_info;
+
+typedef struct line_node {
+    int line_number;
+    char *line;
+    struct line_node *next;
+} line_node;
 
 // Function declarations
 void parse_arguments(int argc, char *argv[], char **input_filename, int *port);
@@ -30,10 +35,15 @@ int handle_client_read(struct client_info *client);
 void handle_client_write(struct client_info *client);
 void process_client_data(struct client_info *client, const char *data); 
 int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size); 
+void insert_line_node(int line_number, const char *line);
+line_node *get_head();
+void free_line_nodes();
 
 #define MAX_EVENTS 64
 #define READ_BUFFER_SIZE 4096
 #define WRITE_BUFFER_SIZE 4096
+
+static line_node *head = NULL;
 
 // Main function
 int main(int argc, char *argv[]) {
@@ -227,8 +237,9 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
 }
 
 int accept_client(int server_socket) {
-
-    int client_socket = accept(server_socket, NULL, 0);
+    struct sockaddr_in client_addr;
+    socklen_t addr_len = sizeof(client_addr);
+    int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
 
     if (client_socket < 0) {
         perror("Error accepting client connection");
@@ -237,6 +248,7 @@ int accept_client(int server_socket) {
 
     return client_socket;
 }
+
 
 void add_client_to_epoll(int epoll_fd, int client_socket) {
     struct epoll_event ev;
@@ -353,7 +365,38 @@ void write_output(const char *output_file_name) {
     fclose(output_file);
 }
 
+void insert_line_node(int line_number, const char *line) {
+    line_node *new_node = (line_node *)malloc(sizeof(line_node));
+    new_node->line_number = line_number;
+    new_node->line = strdup(line);
+    new_node->next = NULL;
 
+    if (!head || line_number < head->line_number) {
+        new_node->next = head;
+        head = new_node;
+    } else {
+        line_node *current = head;
+        while (current->next && current->next->line_number < line_number) {
+            current = current->next;
+        }
+        new_node->next = current->next;
+        current->next = new_node;
+    }
+}
+
+line_node *get_head() {
+    return head;
+}
+
+void free_line_nodes() {
+    line_node *current = head;
+    while (current) {
+        line_node *next = current->next;
+        free(current->line);
+        free(current);
+        current = next;
+    }
+}
 
 void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments) {
     // TODO: Implement cleanup
