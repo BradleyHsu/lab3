@@ -29,6 +29,7 @@ struct client_info *find_client(struct client_info *clients, int client_socket);
 int handle_client_read(struct client_info *client);
 void handle_client_write(struct client_info *client);
 void process_client_data(struct client_info *client, const char *data); 
+int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size); 
 
 #define MAX_EVENTS 64
 #define READ_BUFFER_SIZE 4096
