@@ -159,18 +159,10 @@ int create_and_bind_socket(int port) {
 
     printf("Server socket created and bound\n");
     printf("Server socket: %d\n", server_socket);
-    printf("Server address: %s\n", inet_ntoa(server_addr.sin_addr));
-    printf("Server port: %d\n", ntohs(server_addr.sin_port));
 
     listen(server_socket, 5);
 
     printf("listening at %s:%d\n", inet_ntoa(server_addr.sin_addr), ntohs(server_addr.sin_port));
-
-    int new_socket = accept(server_socket, NULL, NULL);
-
-    printf("new socket %d\n", new_socket);
-
-    printf("Server socket accepted\n");
 
     return server_socket;
 }

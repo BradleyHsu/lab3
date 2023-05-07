@@ -36,10 +36,15 @@ int main(int argc, char *argv[]) {
     int socket_fd = create_socket_and_connect(args.address, args.port);
     printf("Connected\n");
     char *received_data = read_data_from_server(socket_fd);
+    printf("Received data:\n%s\n", received_data);
     store_data_in_sorted_list(received_data);
+    printf("Sorted data:\n");
     line_node *head = get_head();
+    printf("Sending sorted data to server\n");
     send_sorted_data_to_server(socket_fd, head);
+    printf("Sent sorted data to server\n");
     cleanup_and_exit(socket_fd, head);
+    printf("Exiting\n");
 
     return 0;
 }
@@ -106,13 +111,13 @@ int create_socket_and_connect(const char *address, int port) {
         exit(3);
     }
 
-    printf("hi");
+    printf("server_addr: %d\n", server_addr.sin_addr.s_addr);
+
+
     if (connect(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Error connecting to server");
         exit(4);
     }
-
-    printf("hi2");
 
     return socket_fd;
 }
