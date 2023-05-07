@@ -330,7 +330,7 @@ int handle_client_read(struct client_info *client) {
     }
 
     process_client_data(client, buffer);
-    return 0;
+    return bytes_read;
 }
 
 
