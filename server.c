@@ -53,11 +53,10 @@ int main(int argc, char *argv[]) {
     int port;
     parse_arguments(argc, argv, &input_filename, &port);
 
-    printf("Input filename: %s\n", input_filename);
-    printf("Port: %d\n", port);
-
     #ifdef DEBUG
         printf("Debug mode enabled\n");
+        printf("Input filename: %s\n", input_filename);
+        printf("Port: %d\n", port);
     #endif
 
     char *output_filename;
@@ -65,23 +64,26 @@ int main(int argc, char *argv[]) {
     int num_fragments;
     open_files(input_filename, &output_filename, &fragment_files, &num_fragments);
 
-    printf("Output filename: %s\n", output_filename);
-    printf("Number of fragments: %d\n", num_fragments);
+    #ifdef DEBUG
+        printf("Output filename: %s\n", output_filename);
+        printf("Number of fragments: %d\n", num_fragments);
     
-    for (int i = 0; i < num_fragments; i++) {
-        char buffer[256];
-        while(fgets(buffer, sizeof(buffer), fragment_files[i]) != NULL) {
-            strtok(buffer, "\n");
-            printf("Fragment file %d: %s\n", i, buffer);
+        for (int i = 0; i < num_fragments; i++) {
+            char buffer[256];
+            while(fgets(buffer, sizeof(buffer), fragment_files[i]) != NULL) {
+                strtok(buffer, "\n");
+                printf("Fragment file %d: %s\n", i, buffer);
+            }
+            //reset file pointer
+            fseek(fragment_files[i], 0, SEEK_SET);
         }
-        //reset file pointer
-        fseek(fragment_files[i], 0, SEEK_SET);
-    }
+    #endif
 
     int server_socket = create_and_bind_socket(port);
 
-    printf("Server socket: %d\n", server_socket);
-
+    #ifdef DEBUG
+        printf("Server socket: %d\n", server_socket);
+    #endif
     
     event_handling(server_socket, fragment_files, num_fragments, output_filename);
 
@@ -107,7 +109,6 @@ int open_files(char *input_filename, char **output_filename, FILE ***fragment_fi
         perror("Error opening input file");
         exit(EXIT_FAILURE);
     }
-    printf("Input file opened\n");
 
     char buffer[256];
     if (fgets(buffer, sizeof(buffer), input_file) == NULL) {
@@ -165,8 +166,10 @@ int create_and_bind_socket(int port) {
         exit(EXIT_FAILURE);
     }
 
-    printf("Server socket created and bound\n");
-    printf("Server socket: %d\n", server_socket);
+    #ifdef DEBUG
+        printf("Server socket created and bound\n");
+        printf("Server socket: %d\n", server_socket);
+    #endif
 
     listen(server_socket, 5);
 
@@ -312,18 +315,24 @@ int handle_client_read(struct client_info *client) {
     int num_loops = 0;
 
     do {
+
         bytes_read = read(client->socket, buffer + total_bytes_read, READ_BUFFER_SIZE - 1 - total_bytes_read);
-        if (bytes_read > 0) {
-            printf("Read from client:\n %s\n", buffer);
-        }
+
+        #ifdef DEBUG
+            if (bytes_read > 0) {
+                printf("Read from client:\n %s\n", buffer);
+            }
+        #endif
+
         if (bytes_read < 0) {
             perror("Error reading from client socket\n");
             return 1;
         }
+
         total_bytes_read += bytes_read;
         num_loops = num_loops + 1;
-        if (num_loops > 100) {
-            printf("Read loop exceeded 100 iterations\n");
+        if (num_loops > 10000) {
+            printf("Read loop exceeded 10000 iterations\n");
             return 1;
         }
     } while (buffer[total_bytes_read - 1] != '\0');
@@ -335,7 +344,6 @@ int handle_client_read(struct client_info *client) {
     process_client_data(client, buffer);
     return bytes_read;
 }
-
 
 void handle_client_write(struct client_info *client) {
     char buffer[WRITE_BUFFER_SIZE];
@@ -353,7 +361,9 @@ void handle_client_write(struct client_info *client) {
     int total_bytes_written = 0;
 
     while (total_bytes_written < bytes_read ) {
-        printf("Writing to client: %s\n", buffer + total_bytes_written);
+        #ifdef DEBUG 
+            printf("Writing to client: %s\n", buffer + total_bytes_written);
+        #endif
         bytes_written = write(client->socket, buffer + total_bytes_written, bytes_read - total_bytes_written);
         if (bytes_written < 0) {
             perror("Error writing to client socket");
@@ -362,7 +372,6 @@ void handle_client_write(struct client_info *client) {
         total_bytes_written += bytes_written;
     }
 }
-
 
 int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size) {
     int total_bytes_read = 0;
@@ -391,7 +400,9 @@ void process_client_data(struct client_info *client, const char *data) {
         int line_number;
         char *line;
         parse_line(token, &line_number, &line);
-        printf("Inserting line %d: %s\n", line_number, line);
+        #ifdef DEBUG
+            printf("Inserting line %d: %s\n", line_number, line);
+        #endif
         insert_line_node(line_number, line);
         token = strtok(NULL, "\n");
     }
@@ -461,5 +472,25 @@ void free_line_nodes() {
 }
 
 void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments) {
-    // TODO: Implement cleanup
+    if (epoll_fd != -1) {
+        close(epoll_fd);
+    }
+
+    if (clients != NULL) {
+        for (int i = 0; i < MAX_CLIENTS; ++i) {
+            if (clients[i].fd != -1) {
+                close(clients[i].fd);
+            }
+        }
+        free(clients);
+    }
+
+    if (fragment_files != NULL) {
+        for (int i = 0; i < num_fragments; ++i) {
+            if (fragment_files[i] != NULL) {
+                fclose(fragment_files[i]);
+            }
+        }
+        free(fragment_files);
+    }
 }
