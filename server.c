@@ -173,14 +173,20 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
 
     // Main event loop
     int completed_clients = 0;
-    struct client_info *clients = NULL;
+    int connected_clients = 0;
+    struct cliet_info *clients = NULL;
 
     while (completed_clients < num_fragments) {
-        struct epoll_event events[MAX_EVENTS];
-        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
 
-        for (int i = 0; i < nfds; i++) {
-            if (events[i].data.fd == server_socket) {
+        struct epoll_event events[MAX_EVENTS];
+        int ready = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        if(ready < 0) {
+            perror("Error waiting for events");
+            exit(EXIT_FAILURE);
+        }
+
+        for (int event_idx = 0; event_idx < ready; event_idx++) {
+            if (events[event_idx].data.fd == server_socket) {
                 // Handle new client connection
                 int client_socket = accept_client(server_socket);
                 if (client_socket >= 0) {
@@ -190,21 +196,26 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
                 }
             } else {
                 // Handle read/write events for clients
-                struct client_info *client = find_client(clients, events[i].data.fd);
-                if (client) {
-                    if (events[i].events & EPOLLIN) {
-                        // Handle read events
-                        if (handle_client_read(client)) {
-                            // Client completed transfer
-                            epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client->socket, NULL);
-                            close(client->socket);
-                            completed_clients++;
-                        }
+                struct client_info *client = find_client(clients, events[event_idx].data.fd);
+
+                if (client == NULL) {
+                    perror("Error finding client in list");
+                    exit(EXIT_FAILURE);
+                }
+
+                if (events[event_idx].events & EPOLLIN) {
+                    // Handle read events
+                    if (handle_client_read(client)) {
+                        // Client completed transfer
+                        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client->socket, NULL);
+                        close(client->socket);
+                        completed_clients++;
                     }
-                    if (events[i].events & EPOLLOUT) {
-                        // Handle write events
-                        handle_client_write(client);
-                    }
+                }
+
+                if (events[event_idx].events & EPOLLOUT) {
+                    // Handle write events
+                    handle_client_write(client);
                 }
             }
         }
@@ -215,9 +226,8 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
 }
 
 int accept_client(int server_socket) {
-    struct sockaddr_in client_addr;
-    socklen_t addr_len = sizeof(client_addr);
-    int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
+
+    int client_socket = accept(server_socket, NULL, 0);
 
     if (client_socket < 0) {
         perror("Error accepting client connection");
@@ -253,6 +263,7 @@ struct client_info *find_client(struct client_info *clients, int client_socket) 
         }
         current = current->next;
     }
+    perror("Error finding client in list")
     return NULL;
 }
 
