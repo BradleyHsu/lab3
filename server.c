@@ -309,6 +309,7 @@ int handle_client_read(struct client_info *client) {
 
     do {
         bytes_read = read(client->socket, buffer + total_bytes_read, READ_BUFFER_SIZE - 1 - total_bytes_read);
+        printf("Bytes read: %d\n", bytes_read);
         if (bytes_read < 0) {
             perror("Error reading from client socket");
             return 1;
@@ -317,6 +318,7 @@ int handle_client_read(struct client_info *client) {
     } while (bytes_read > 0 && total_bytes_read < READ_BUFFER_SIZE - 1);
 
     buffer[total_bytes_read] = '\0';
+    printf("Read from client: %s\n", buffer);
     process_client_data(client, buffer);
     return 0;
 }
