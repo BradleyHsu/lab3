@@ -120,8 +120,6 @@ int create_socket_and_connect(const char *address, int port) {
         perror("Error connecting to server");
         exit(4);
     }
-    int flags = fcntl(socket_fd, F_GETFL, 0);
-    fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK);
 
     return socket_fd;
 }
