@@ -387,8 +387,7 @@ void process_client_data(struct client_info *client, const char *data) {
     while (token) {
         int line_number = atoi(token);
         token = strtok(NULL, "\n");
-        printf("Line number: %d\n", line_number);
-        printf("Line: %s\n", token);
+        printf("Inserting line %d: %s\n", line_number, token);
         insert_line_node(line_number, token);
         token = strtok(NULL, " ");
         }
