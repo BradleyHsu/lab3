@@ -317,12 +317,8 @@ int handle_client_read(struct client_info *client) {
             return 1;
         }
         total_bytes_read += bytes_read;
-    } while (bytes_read > 0 && total_bytes_read < READ_BUFFER_SIZE - 1);
+    } while (buffer[total_bytes_read - 1] != '\0');
 
-    if (bytes_read != 0) {
-        printf("read buffer %s\n", buffer);
-    } 
-    buffer[total_bytes_read] = '\0';
     process_client_data(client, buffer);
     return 0;
 }
