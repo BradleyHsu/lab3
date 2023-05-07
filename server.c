@@ -306,7 +306,7 @@ int handle_client_read(struct client_info *client) {
     char buffer[READ_BUFFER_SIZE];
     int bytes_read;
     int total_bytes_read = 0;
-    int num_loops = 0
+    int num_loops = 0;
 
     do {
         bytes_read = read(client->socket, buffer + total_bytes_read, READ_BUFFER_SIZE - 1 - total_bytes_read);
