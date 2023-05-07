@@ -318,7 +318,7 @@ int handle_client_read(struct client_info *client) {
             return 1;
         }
         total_bytes_read += bytes_read;
-        int num_loops = num_loops + 1;
+        num_loops = num_loops + 1;
         if (num_loops > 100) {
             printf("Read loop exceeded 100 iterations\n");
             return 1;
