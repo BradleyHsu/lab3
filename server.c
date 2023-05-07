@@ -382,19 +382,32 @@ int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size) {
 
 void process_client_data(struct client_info *client, const char *data) {
     char *data_copy = strdup(data);
-    char *token = strtok(data_copy, " ");
+    char *token = strtok(data_copy, "\n");
     
     while (token) {
-        int line_number = atoi(token);
+        int line_number;
+        char *line;
         token = strtok(NULL, "\n");
-        printf("Inserting line %d: %s\n", line_number, token);
-        insert_line_node(line_number, token);
+        parse_line(token, &line_number, &line);
+        printf("Inserting line %d: %s\n", line_number, line);
+        insert_line_node(line_number, line);
         token = strtok(NULL, " ");
     }
     
     free(data_copy);
 }
-
+void parse_line(const char *input, int *output_int, char **output_str) {
+    if (!input || !output_int || !output_str) {
+        return;
+    }
+    sscanf(input, "%d", output_int);
+    const char *space = strchr(input, ' ');
+    if (space) {
+        *output_str = strdup(space + 1);
+    } else {
+        *output_str = strdup("");
+    }
+}
 
 void write_output(const char *output_file_name) {
     FILE *output_file = fopen(output_file_name, "w");
