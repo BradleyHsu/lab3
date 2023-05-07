@@ -350,10 +350,22 @@ void handle_client_write(struct client_info *client) {
 
 
 int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size) {
-    if (fgets(buffer, buffer_size, fragment_file) == NULL) {
-        return feof(fragment_file) ? 0 : -1;
+    int total_bytes_read = 0;
+    int bytes_read;
+    
+    while ((bytes_read = fread(buffer + total_bytes_read, 1, buffer_size - 1 - total_bytes_read, fragment_file)) > 0) {
+        total_bytes_read += bytes_read;
+        if (total_bytes_read == buffer_size - 1) {
+            break;
+        }
     }
-    return strlen(buffer);
+
+    if (ferror(fragment_file)) {
+        return -1;
+    }
+
+    buffer[total_bytes_read] = '\0';
+    return total_bytes_read;
 }
 
 void process_client_data(struct client_info *client, const char *data) {
