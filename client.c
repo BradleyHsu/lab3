@@ -135,13 +135,13 @@ char *read_data_from_server(int socket_fd) {
 
     printf("Reading data from server\n");
 
-    while ((bytes_read = read(socket_fd, buffer, buffer_size - 1)) > 0) {
+    do ((bytes_read = read(socket_fd, buffer, buffer_size - 1)) > 0) {
         printf("Read %ld bytes\n", bytes_read);
         buffer[bytes_read] = '\0';
         data = realloc(data, data_size + bytes_read + 1);
         strncpy(data + data_size, buffer, bytes_read + 1);
         data_size += bytes_read;
-    }
+    } while (buffer[bytes_read - 1] != '\0');
 
     if (bytes_read < 0) {
         perror("Error reading from server");
