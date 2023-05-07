@@ -106,10 +106,13 @@ int create_socket_and_connect(const char *address, int port) {
         exit(3);
     }
 
+    printf("hi");
     if (connect(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Error connecting to server");
         exit(4);
     }
+
+    printf("hi2");
 
     return socket_fd;
 }
@@ -169,5 +172,5 @@ void send_sorted_data_to_server(int socket_fd, line_node *head) {
 
 void cleanup_and_exit(int socket_fd, line_node *head) {
     close(socket_fd);
-    free_line_nodes(head);
+    free_line_nodes();
 }
