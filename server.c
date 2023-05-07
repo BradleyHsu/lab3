@@ -197,6 +197,12 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
             exit(EXIT_FAILURE);
         }
 
+        for (int i = 0; i < ready; i ++) {
+            printf("Event: %d\n", i);
+            printf("Event fd: %d\n", events[i].data.fd);
+            printf("Event mask: %d\n", events[i].events);
+        }
+
         for (int event_idx = 0; event_idx < ready; event_idx++) {
             printf("Event: %d\n", event_idx);
             printf("Event fd: %d\n", events[event_idx].data.fd);
