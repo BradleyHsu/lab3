@@ -319,6 +319,10 @@ int handle_client_read(struct client_info *client) {
         total_bytes_read += bytes_read;
     } while (buffer[total_bytes_read - 1] != '\0');
 
+    if (bytes_read > 0) {
+         printf("Finished reading from client\n");
+    }
+
     process_client_data(client, buffer);
     return 0;
 }
