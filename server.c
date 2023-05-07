@@ -388,11 +388,10 @@ void process_client_data(struct client_info *client, const char *data) {
     while (token) {
         int line_number;
         char *line;
-        token = strtok(NULL, "\n");
         parse_line(token, &line_number, &line);
         printf("Inserting line %d: %s\n", line_number, line);
         insert_line_node(line_number, line);
-        token = strtok(NULL, " ");
+        token = strtok(NULL, "\n");
     }
     
     free(data_copy);
