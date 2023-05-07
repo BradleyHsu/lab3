@@ -28,6 +28,7 @@ struct client_info *add_client_to_list(struct client_info *clients, int client_s
 struct client_info *find_client(struct client_info *clients, int client_socket);
 int handle_client_read(struct client_info *client);
 void handle_client_write(struct client_info *client);
+void process_client_data(struct client_info *client, const char *data); 
 
 #define MAX_EVENTS 64
 #define READ_BUFFER_SIZE 4096
@@ -221,8 +222,7 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
         }
     }
 
-    write_output(output_filename, clients);
-    cleanup(epoll_fd, clients);
+    write_output(output_filename);
 }
 
 int accept_client(int server_socket) {
@@ -263,7 +263,7 @@ struct client_info *find_client(struct client_info *clients, int client_socket) 
         }
         current = current->next;
     }
-    perror("Error finding client in list")
+    perror("Error finding client in list");
     return NULL;
 }
 
@@ -354,6 +354,6 @@ void write_output(const char *output_file_name) {
 
 
 
-void cleanup(FILE *output_file, FILE **fragment_files, int num_fragments) {
+void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments) {
     // TODO: Implement cleanup
 }
