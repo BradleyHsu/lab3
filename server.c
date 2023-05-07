@@ -173,7 +173,6 @@ int create_and_bind_socket(int port) {
     return server_socket;
 }
 
-
 void event_handling(int server_socket, FILE **fragment_files, int num_fragments, char *output_filename) {
     // Set up epoll for event handling
     int epoll_fd = epoll_create1(0);
@@ -274,7 +273,6 @@ int accept_client(int server_socket) {
     return client_socket;
 }
 
-
 void add_client_to_epoll(int epoll_fd, int client_socket) {
     struct epoll_event ev;
     ev.events = EPOLLIN | EPOLLOUT;
@@ -326,6 +324,7 @@ int handle_client_read(struct client_info *client) {
 
 
 void handle_client_write(struct client_info *client) {
+    printf("Handling client write\n");
     char buffer[WRITE_BUFFER_SIZE];
     int bytes_read = read_fragment_data(client->fragment_file, buffer, WRITE_BUFFER_SIZE - 1);
     if (bytes_read <= 0) {
@@ -340,6 +339,7 @@ void handle_client_write(struct client_info *client) {
     int total_bytes_written = 0;
 
     while (total_bytes_written < bytes_read) {
+        printf("Writing to client: %s\n", buffer + total_bytes_written);
         bytes_written = write(client->socket, buffer + total_bytes_written, bytes_read - total_bytes_written);
         if (bytes_written < 0) {
             perror("Error writing to client socket");
