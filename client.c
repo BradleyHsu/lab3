@@ -179,7 +179,7 @@ void send_sorted_data_to_server(int socket_fd, line_node *head) {
             perror("Error writing to server");
             exit(6);
         }
-        write(socket_fd, "\0", 1);
+        write(socket_fd, "\x", 1);
         current = current->next;
     }
 }
