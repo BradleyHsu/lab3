@@ -81,6 +81,7 @@ void free_line_nodes() {
         current = next;
     }
 }
+
 client_args parse_arguments(int argc, char *argv[]) {
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <address> <port>\n", argv[0]);
@@ -122,7 +123,6 @@ int create_socket_and_connect(const char *address, int port) {
     return socket_fd;
 }
 
-// Implement the read_data_from_server, store_data_in_sorted_list, send_sorted_data_to_server, and cleanup_and_exit functions here
 char *read_data_from_server(int socket_fd) {
     const int buffer_size = 1024;
     char *data = NULL;
@@ -130,7 +130,10 @@ char *read_data_from_server(int socket_fd) {
     ssize_t bytes_read;
     char buffer[buffer_size];
 
+    printf("Reading data from server\n");
+
     while ((bytes_read = read(socket_fd, buffer, buffer_size - 1)) > 0) {
+        printf("Read %ld bytes\n", bytes_read);
         buffer[bytes_read] = '\0';
         data = realloc(data, data_size + bytes_read + 1);
         strncpy(data + data_size, buffer, bytes_read + 1);
