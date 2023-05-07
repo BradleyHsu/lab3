@@ -174,7 +174,7 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
     // Main event loop
     int completed_clients = 0;
     int connected_clients = 0;
-    struct cliet_info *clients = NULL;
+    client_info *clients = NULL;
 
     while (completed_clients < num_fragments) {
 
