@@ -167,7 +167,7 @@ void store_data_in_sorted_list(const char *received_data) {
 }
 
 void send_sorted_data_to_server(int socket_fd, line_node *head) {
-    print("Sending sorted data to server\n");
+    printf("Sending sorted data to server\n");
     char buffer[1024];
     line_node *current = head;
 
