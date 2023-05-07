@@ -381,6 +381,7 @@ int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size) {
 }
 
 void process_client_data(struct client_info *client, const char *data) {
+    printf("Processing client data:\n%s\n", data);
     char *data_copy = strdup(data);
     char *line = strtok(data_copy, "\n");
     
@@ -389,6 +390,7 @@ void process_client_data(struct client_info *client, const char *data) {
         line = strtok(NULL, "\n");
         
         if (line) {
+            printf("Inserting line %d: %s\n", line_number, line);
             insert_line_node(line_number, line);
             line = strtok(NULL, "\n");
         }
