@@ -197,16 +197,20 @@ void event_handling(int server_socket, FILE **fragment_files, int num_fragments,
             exit(EXIT_FAILURE);
         }
 
-        for (int i = 0; i < ready; i ++) {
-            printf("Event: %d\n", i);
-            printf("Event fd: %d\n", events[i].data.fd);
-            printf("Event mask: %d\n", events[i].events);
-        }
+        #ifdef DEBUG
+            for (int i = 0; i < ready; i ++) {
+                printf("Event: %d\n", i);
+                printf("Event fd: %d\n", events[i].data.fd);
+                printf("Event mask: %d\n", events[i].events);
+            }
+        #endif
 
         for (int event_idx = 0; event_idx < ready; event_idx++) {
-            printf("Event: %d\n", event_idx);
-            printf("Event fd: %d\n", events[event_idx].data.fd);
-            printf("Event mask: %d\n", events[event_idx].events);
+            #ifdef DEBUG
+                printf("Event: %d\n", event_idx);
+                printf("Event fd: %d\n", events[event_idx].data.fd);
+                printf("Event mask: %d\n", events[event_idx].events);
+            #endif 
             if (events[event_idx].data.fd == server_socket) {
                 // Handle new client connection
                 int client_socket = accept_client(server_socket);
@@ -251,9 +255,11 @@ int accept_client(int server_socket) {
     int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
 
     if (client_socket < 0) {
-        printf("Error accepting client connection\n");
-        printf("client_socket: %d\n", client_socket);
-        printf("client_addr: %s\n", inet_ntoa(client_addr.sin_addr));
+        #ifdef DEBUG
+            printf("Error accepting client connection\n");
+            printf("client_socket: %d\n", client_socket);
+            printf("client_addr: %s\n", inet_ntoa(client_addr.sin_addr));
+        #endif
         return -1;
     }
 
