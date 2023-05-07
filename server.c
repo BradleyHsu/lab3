@@ -323,7 +323,7 @@ int handle_client_read(struct client_info *client) {
             printf("Read loop exceeded 100 iterations\n");
             return 1;
         }
-    } while (buffer[total_bytes_read - 1] != '\x');
+    } while (buffer[total_bytes_read - 1] != '\0');
 
     if (bytes_read > 0) {
          printf("Finished reading from client\n");
