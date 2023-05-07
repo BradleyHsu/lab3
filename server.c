@@ -335,10 +335,11 @@ void handle_client_write(struct client_info *client) {
     }
 
     buffer[bytes_read] = '\0';
+    bytes_read += 1;
     int bytes_written;
     int total_bytes_written = 0;
 
-    while (total_bytes_written < bytes_read) {
+    while (total_bytes_written < bytes_read ) {
         printf("Writing to client: %s\n", buffer + total_bytes_written);
         bytes_written = write(client->socket, buffer + total_bytes_written, bytes_read - total_bytes_written);
         if (bytes_written < 0) {
