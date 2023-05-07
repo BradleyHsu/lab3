@@ -32,7 +32,9 @@ static line_node *head = NULL;
 
 int main(int argc, char *argv[]) {
     client_args args = parse_arguments(argc, argv);
+    printf("Connecting to %s:%d\n", args.address, args.port);
     int socket_fd = create_socket_and_connect(args.address, args.port);
+    printf("Connected\n");
     char *received_data = read_data_from_server(socket_fd);
     store_data_in_sorted_list(received_data);
     line_node *head = get_head();
