@@ -311,14 +311,14 @@ int handle_client_read(struct client_info *client) {
     do {
         bytes_read = read(client->socket, buffer + total_bytes_read, READ_BUFFER_SIZE - 1 - total_bytes_read);
         if (bytes_read > 0) {
-            printf("Read from client: %s\n", buffer);
+            printf("Read from client:\n %s\n", buffer);
         }
         if (bytes_read < 0) {
-            perror("Error reading from client socket");
+            perror("Error reading from client socket\n");
             return 1;
         }
         total_bytes_read += bytes_read;
-        int num_loops++;
+        int num_loops = num_loops + 1;
         if (num_loops > 100) {
             printf("Read loop exceeded 100 iterations\n");
             return 1;
