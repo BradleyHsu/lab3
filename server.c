@@ -38,6 +38,7 @@ int read_fragment_data(FILE *fragment_file, char *buffer, int buffer_size);
 void insert_line_node(int line_number, const char *line);
 line_node *get_head();
 void free_line_nodes();
+void parse_line(char *input, int *output_int, char **output_str); 
 
 #define MAX_EVENTS 64
 #define READ_BUFFER_SIZE 4096
@@ -396,7 +397,7 @@ void process_client_data(struct client_info *client, const char *data) {
     
     free(data_copy);
 }
-void parse_line(const char *input, int *output_int, char **output_str) {
+void parse_line(char *input, int *output_int, char **output_str) {
     if (!input || !output_int || !output_str) {
         return;
     }
