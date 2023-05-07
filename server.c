@@ -245,7 +245,10 @@ int accept_client(int server_socket) {
     int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_len);
 
     if (client_socket < 0) {
-        perror("Error accepting client connection");
+        printf("Error accepting client connection\n");
+        printf("Error: %s\n", strerror(errno));
+        printf("client_socket: %d\n", client_socket);
+        printf("client_addr: %s\n", inet_ntoa(client_addr.sin_addr));
         return -1;
     }
 
