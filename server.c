@@ -471,26 +471,31 @@ void free_line_nodes() {
     }
 }
 
+#include <unistd.h> // For close function
+#include <stdlib.h> // For free function
+
 void cleanup(int epoll_fd, struct client_info *clients, FILE **fragment_files, int num_fragments) {
-    if (epoll_fd != -1) {
-        close(epoll_fd);
+    // Close the epoll file descriptor
+    close(epoll_fd);
+
+    // Close all fragment files
+    for (int i = 0; i < num_fragments; i++) {
+        if (fragment_files[i]) {
+            fclose(fragment_files[i]);
+            fragment_files[i] = NULL;
+        }
     }
 
-    if (clients != NULL) {
-        for (int i = 0; i < MAX_CLIENTS; ++i) {
-            if (clients[i].fd != -1) {
-                close(clients[i].fd);
-            }
+    // Free the memory allocated for client_info structures
+    struct client_info *current_client = clients;
+    struct client_info *next_client;
+    while (current_client) {
+        next_client = current_client->next;
+        if (current_client->fragment_file) {
+            fclose(current_client->fragment_file);
         }
-        free(clients);
-    }
-
-    if (fragment_files != NULL) {
-        for (int i = 0; i < num_fragments; ++i) {
-            if (fragment_files[i] != NULL) {
-                fclose(fragment_files[i]);
-            }
-        }
-        free(fragment_files);
+        close(current_client->socket);
+        free(current_client);
+        current_client = next_client;
     }
 }
