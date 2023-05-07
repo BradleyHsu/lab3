@@ -306,6 +306,7 @@ int handle_client_read(struct client_info *client) {
     char buffer[READ_BUFFER_SIZE];
     int bytes_read;
     int total_bytes_read = 0;
+    int num_loops = 0
 
     do {
         bytes_read = read(client->socket, buffer + total_bytes_read, READ_BUFFER_SIZE - 1 - total_bytes_read);
@@ -317,6 +318,11 @@ int handle_client_read(struct client_info *client) {
             return 1;
         }
         total_bytes_read += bytes_read;
+        int num_loops++;
+        if (num_loops > 100) {
+            printf("Read loop exceeded 100 iterations\n");
+            return 1;
+        }
     } while (buffer[total_bytes_read - 1] != '\0');
 
     if (bytes_read > 0) {
